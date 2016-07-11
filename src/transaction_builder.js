@@ -9,7 +9,6 @@ var typeforce = require('typeforce')
 var types = require('./types')
 
 var ECPair = require('./ecpair')
-var ECSignature = require('./ecsignature')
 var Transaction = require('./transaction')
 
 // re-orders signatures to match pubKeys, fills undefined otherwise
@@ -74,7 +73,7 @@ function extractInput (transaction, txIn, vin) {
         return result
 
       case 'pubkeyhash':
-        parsed = ECSignature.parseScriptSignature(scriptSigChunks[0])
+        parsed = bscript.signature.decode(scriptSigChunks[0])
         hashType = parsed.hashType
         pubKeys = scriptSigChunks.slice(1)
         signatures = [parsed.signature]
@@ -83,7 +82,7 @@ function extractInput (transaction, txIn, vin) {
         break
 
       case 'pubkey':
-        parsed = ECSignature.parseScriptSignature(scriptSigChunks[0])
+        parsed = bscript.signature.decode(scriptSigChunks[0])
         hashType = parsed.hashType
         signatures = [parsed.signature]
 
@@ -97,7 +96,7 @@ function extractInput (transaction, txIn, vin) {
         signatures = scriptSigChunks.slice(1).map(function (chunk) {
           if (chunk === ops.OP_0) return undefined
 
-          parsed = ECSignature.parseScriptSignature(chunk)
+          parsed = bscript.signature.decode(chunk)
           hashType = parsed.hashType
 
           return parsed.signature
@@ -308,18 +307,18 @@ function buildFromInputData (input, scriptType, parentType, redeemScript, allowI
 
   switch (scriptType) {
     case 'pubkeyhash':
-      var pkhSignature = input.signatures[0].toScriptSignature(input.hashType)
+      var pkhSignature = bscript.signature.encode(input.signatures[0], input.hashType)
       scriptSig = bscript.pubKeyHashInput(pkhSignature, input.pubKeys[0])
       break
 
     case 'pubkey':
-      var pkSignature = input.signatures[0].toScriptSignature(input.hashType)
+      var pkSignature = bscript.signature.encode(input.signatures[0], input.hashType)
       scriptSig = bscript.pubKeyInput(pkSignature)
       break
 
     case 'multisig':
       var msSignatures = input.signatures.map(function (signature) {
-        return signature && signature.toScriptSignature(input.hashType)
+        return signature && bscript.signature.encode(signature, input.hashType)
       })
 
       // fill in blanks with OP_0

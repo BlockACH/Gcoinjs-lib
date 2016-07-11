@@ -144,14 +144,14 @@ describe('bitcoinjs-lib (crypto)', function () {
             var prevOut = bitcoin.Transaction.fromHex(result.txHex)
             var prevOutScript = prevOut.outs[prevVout].script
 
-            var scriptSignature = bitcoin.ECSignature.parseScriptSignature(scriptChunks[0])
+            var scriptSig = bitcoin.script.signature.decode(scriptChunks[0])
             var publicKey = bitcoin.ECPair.fromPublicKeyBuffer(scriptChunks[1])
 
-            var m = transaction.hashForSignature(input.vout, prevOutScript, scriptSignature.hashType)
-            assert(publicKey.verify(m, scriptSignature.signature), 'Invalid m')
+            var m = transaction.hashForSignature(input.vout, prevOutScript, scriptSig.hashType)
+            assert(publicKey.verify(m, scriptSig.signature), 'Invalid m')
 
             // store the required information
-            input.signature = scriptSignature.signature
+            input.signature = scriptSig.signature
             input.z = bigi.fromBuffer(m)
 
             return callback()
