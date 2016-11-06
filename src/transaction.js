@@ -6,9 +6,10 @@ var opcodes = require('./opcodes.json')
 var typeforce = require('typeforce')
 var types = require('./types')
 
-function Transaction () {
+function Transaction (tx_type=0) {
   this.version = 1
   this.locktime = 0
+  this.type = tx_type
   this.ins = []
   this.outs = []
 }
@@ -18,6 +19,13 @@ Transaction.SIGHASH_ALL = 0x01
 Transaction.SIGHASH_NONE = 0x02
 Transaction.SIGHASH_SINGLE = 0x03
 Transaction.SIGHASH_ANYONECANPAY = 0x80
+
+Transaction.TX_TYPE_NORMAL = 0
+Transaction.TX_TYPE_MINT = 1
+Transaction.TX_TYPE_LICENSE = 2
+Transaction.TX_TYPE_VOTE = 3
+Transaction.TX_TYPE_BANVOTE = 4
+Transaction.TX_TYPE_CONTRACT = 4
 
 Transaction.fromBuffer = function (buffer, __noStrict) {
   var offset = 0
@@ -116,13 +124,14 @@ Transaction.prototype.addInput = function (hash, index, sequence, scriptSig) {
   }) - 1)
 }
 
-Transaction.prototype.addOutput = function (scriptPubKey, value) {
-  typeforce(types.tuple(types.Buffer, types.Satoshi), arguments)
+Transaction.prototype.addOutput = function (scriptPubKey, value, color) {
+  typeforce(types.tuple(types.Buffer, types.Satoshi, types.Number), arguments)
 
   // Add the output and return the output's index
   return (this.outs.push({
     script: scriptPubKey,
-    value: value
+    value: value,
+    color: color,
   }) - 1)
 }
 
@@ -134,11 +143,11 @@ Transaction.prototype.byteLength = function () {
   }
 
   return (
-    8 +
+    12 +
     bufferutils.varIntSize(this.ins.length) +
     bufferutils.varIntSize(this.outs.length) +
     this.ins.reduce(function (sum, input) { return sum + 40 + scriptSize(input.script) }, 0) +
-    this.outs.reduce(function (sum, output) { return sum + 8 + scriptSize(output.script) }, 0)
+    this.outs.reduce(function (sum, output) { return sum + 12 + scriptSize(output.script) }, 0)
   )
 }
 
@@ -159,7 +168,8 @@ Transaction.prototype.clone = function () {
   newTx.outs = this.outs.map(function (txOut) {
     return {
       script: txOut.script,
-      value: txOut.value
+      value: txOut.value,
+      color: txOut.color,
     }
   })
 
@@ -285,9 +295,11 @@ Transaction.prototype.toBuffer = function (buffer, initialOffset) {
 
     writeVarInt(txOut.script.length)
     writeSlice(txOut.script)
+    writeUInt32(txOut.color)
   })
 
   writeUInt32(this.locktime)
+  writeUInt32(this.type)
 
   // avoid slicing unless necessary
   if (initialOffset !== undefined) return buffer.slice(initialOffset, offset)

@@ -305,7 +305,7 @@ TransactionBuilder.fromTransaction = function (transaction, network) {
 
   // Copy outputs (done first to avoid signature invalidation)
   transaction.outs.forEach(function (txOut) {
-    txb.addOutput(txOut.script, txOut.value)
+    txb.addOutput(txOut.script, txOut.value, txOut.color)
   })
 
   // Copy inputs
@@ -342,6 +342,10 @@ TransactionBuilder.prototype.addInput = function (txHash, vout, sequence, prevOu
   } else if (txHash instanceof Transaction) {
     prevOutScript = txHash.outs[vout].script
     txHash = txHash.getHash()
+  }
+
+  if (typeof prevOutScript === 'string') {
+    prevOutScript = new Buffer(prevOutScript, 'hex')
   }
 
   return this.__addInputUnsafe(txHash, vout, sequence, null, prevOutScript)
@@ -388,7 +392,7 @@ TransactionBuilder.prototype.__addInputUnsafe = function (txHash, vout, sequence
   return vin
 }
 
-TransactionBuilder.prototype.addOutput = function (scriptPubKey, value) {
+TransactionBuilder.prototype.addOutput = function (scriptPubKey, value, color) {
   if (!this.__canModifyOutputs()) {
     throw new Error('No, this would invalidate signatures')
   }
@@ -398,7 +402,7 @@ TransactionBuilder.prototype.addOutput = function (scriptPubKey, value) {
     scriptPubKey = baddress.toOutputScript(scriptPubKey, this.network)
   }
 
-  return this.tx.addOutput(scriptPubKey, value)
+  return this.tx.addOutput(scriptPubKey, value, color)
 }
 
 TransactionBuilder.prototype.build = function () {
@@ -474,7 +478,6 @@ TransactionBuilder.prototype.sign = function (vin, keyPair, redeemScript, hashTy
   var kpPubKey = keyPair.getPublicKeyBuffer()
   if (!canSign(input)) {
     prepareInput(input, kpPubKey, redeemScript, hashType)
-
     if (!canSign(input)) throw Error(input.prevOutType + ' not supported')
   }
 

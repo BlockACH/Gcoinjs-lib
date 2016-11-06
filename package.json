@@ -1,7 +1,7 @@
 {
-  "name": "bitcoinjs-lib",
+  "name": "gcoinjs-lib",
   "version": "2.3.0",
-  "description": "Client-side Bitcoin JavaScript library",
+  "description": "Client-side Gcoin JavaScript library",
   "main": "./src/index.js",
   "engines": {
     "node": ">=0.12"
