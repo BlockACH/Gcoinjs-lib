@@ -14,6 +14,7 @@ function Block () {
   this.timestamp = 0
   this.bits = 0
   this.nonce = 0
+  this.scriptSig = null
 }
 
 Block.fromBuffer = function (buffer) {
@@ -62,6 +63,9 @@ Block.fromBuffer = function (buffer) {
     block.transactions.push(tx)
   }
 
+  var scriptLen = readVarInt()
+  block.scriptSig = readSlice(scriptLen)
+
   return block
 }
 
@@ -88,22 +92,22 @@ Block.prototype.toBuffer = function (headersOnly) {
   var buffer = new Buffer(80)
 
   var offset = 0
-  function writeSlice (slice) {
+  function writeSlice (slice, buffer) {
     slice.copy(buffer, offset)
     offset += slice.length
   }
 
-  function writeUInt32 (i) {
+  function writeUInt32 (i, buffer) {
     buffer.writeUInt32LE(i, offset)
     offset += 4
   }
 
-  writeUInt32(this.version)
-  writeSlice(this.prevHash)
-  writeSlice(this.merkleRoot)
-  writeUInt32(this.timestamp)
-  writeUInt32(this.bits)
-  writeUInt32(this.nonce)
+  writeUInt32(this.version, buffer)
+  writeSlice(this.prevHash, buffer)
+  writeSlice(this.merkleRoot, buffer)
+  writeUInt32(this.timestamp, buffer)
+  writeUInt32(this.bits, buffer)
+  writeUInt32(this.nonce, buffer)
 
   if (headersOnly || !this.transactions) return buffer
 
@@ -112,7 +116,10 @@ Block.prototype.toBuffer = function (headersOnly) {
     return tx.toBuffer()
   })
 
-  return Buffer.concat([buffer, txLenBuffer].concat(txBuffers))
+  var scriptLenBuffer = bufferutils.varIntBuffer(this.scriptSig.length)
+  return Buffer.concat([buffer, txLenBuffer]
+               .concat(txBuffers)
+               .concat([scriptLenBuffer, this.scriptSig]))
 }
 
 Block.prototype.toHex = function (headersOnly) {

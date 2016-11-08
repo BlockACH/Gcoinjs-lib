@@ -20,7 +20,6 @@ describe('Block', function () {
     fixtures.valid.forEach(function (f) {
       it('imports the block: ' + f.description + ' correctly', function () {
         var block = Block.fromHex(f.hex)
-
         assert.strictEqual(block.version, f.version)
         assert.strictEqual(block.prevHash.toString('hex'), f.prevHash)
         assert.strictEqual(block.merkleRoot.toString('hex'), f.merkleRoot)

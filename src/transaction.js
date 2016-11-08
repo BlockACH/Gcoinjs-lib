@@ -6,10 +6,10 @@ var opcodes = require('./opcodes.json')
 var typeforce = require('typeforce')
 var types = require('./types')
 
-function Transaction (tx_type=0) {
+function Transaction (type = Transaction.TX_TYPE_NORMAL) {
   this.version = 1
   this.locktime = 0
-  this.type = tx_type
+  this.type = type
   this.ins = []
   this.outs = []
 }
@@ -73,11 +73,13 @@ Transaction.fromBuffer = function (buffer, __noStrict) {
   for (i = 0; i < voutLen; ++i) {
     tx.outs.push({
       value: readUInt64(),
-      script: readScript()
+      script: readScript(),
+      color: readUInt32()
     })
   }
 
   tx.locktime = readUInt32()
+  tx.type = readUInt32()
 
   if (__noStrict) return tx
   if (offset !== buffer.length) throw new Error('Transaction has unexpected data')
@@ -131,7 +133,7 @@ Transaction.prototype.addOutput = function (scriptPubKey, value, color) {
   return (this.outs.push({
     script: scriptPubKey,
     value: value,
-    color: color,
+    color: color
   }) - 1)
 }
 
@@ -155,6 +157,7 @@ Transaction.prototype.clone = function () {
   var newTx = new Transaction()
   newTx.version = this.version
   newTx.locktime = this.locktime
+  newTx.type = this.type
 
   newTx.ins = this.ins.map(function (txIn) {
     return {
@@ -169,7 +172,7 @@ Transaction.prototype.clone = function () {
     return {
       script: txOut.script,
       value: txOut.value,
-      color: txOut.color,
+      color: txOut.color
     }
   })
 

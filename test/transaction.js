@@ -12,6 +12,7 @@ describe('Transaction', function () {
     var tx = new Transaction()
     tx.version = raw.version
     tx.locktime = raw.locktime
+    tx.type = raw.type
 
     raw.ins.forEach(function (txIn) {
       var txHash = new Buffer(txIn.hash, 'hex')
@@ -35,7 +36,7 @@ describe('Transaction', function () {
         script = bscript.fromASM(txOut.script)
       }
 
-      tx.addOutput(script, txOut.value)
+      tx.addOutput(script, txOut.value, txOut.color)
     })
 
     return tx
@@ -136,8 +137,8 @@ describe('Transaction', function () {
   describe('addOutput', function () {
     it('returns an index', function () {
       var tx = new Transaction()
-      assert.strictEqual(tx.addOutput(new Buffer(0), 0), 0)
-      assert.strictEqual(tx.addOutput(new Buffer(0), 0), 1)
+      assert.strictEqual(tx.addOutput(new Buffer(0), 0, 1), 0)
+      assert.strictEqual(tx.addOutput(new Buffer(0), 0, 1), 1)
     })
   })
 
@@ -186,17 +187,6 @@ describe('Transaction', function () {
         var tx = Transaction.fromHex(f.hex)
 
         assert.strictEqual(tx.isCoinbase(), f.coinbase)
-      })
-    })
-  })
-
-  describe('hashForSignature', function () {
-    fixtures.hashForSignature.forEach(function (f) {
-      it('should return ' + f.hash + ' for ' + (f.description ? ('case "' + f.description + '"') : f.script), function () {
-        var tx = Transaction.fromHex(f.txHex)
-        var script = bscript.fromASM(f.script)
-
-        assert.strictEqual(tx.hashForSignature(f.inIndex, script, f.type).toString('hex'), f.hash)
       })
     })
   })

@@ -296,12 +296,20 @@ TransactionBuilder.prototype.setVersion = function (version) {
   this.tx.version = version
 }
 
+TransactionBuilder.prototype.setType = function (type) {
+  typeforce(types.UInt32, type)
+
+  // XXX: this might eventually become more complex depending on what the versions represent
+  this.tx.type = type
+}
+
 TransactionBuilder.fromTransaction = function (transaction, network) {
   var txb = new TransactionBuilder(network)
 
   // Copy transaction fields
   txb.setVersion(transaction.version)
   txb.setLockTime(transaction.locktime)
+  txb.setType(transaction.type)
 
   // Copy outputs (done first to avoid signature invalidation)
   transaction.outs.forEach(function (txOut) {

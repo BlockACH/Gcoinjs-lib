@@ -31,7 +31,7 @@ function construct (f, sign) {
   })
 
   f.outputs.forEach(function (output) {
-    txb.addOutput(bscript.fromASM(output.script), output.value)
+    txb.addOutput(bscript.fromASM(output.script), output.value, output.color)
   })
 
   if (sign === undefined || sign) {
@@ -86,7 +86,7 @@ describe('TransactionBuilder', function () {
         })
 
         f.outputs.forEach(function (output) {
-          tx.addOutput(bscript.fromASM(output.script), output.value)
+          tx.addOutput(bscript.fromASM(output.script), output.value, output.color)
         })
 
         var txb = TransactionBuilder.fromTransaction(tx)
@@ -143,8 +143,8 @@ describe('TransactionBuilder', function () {
 
     it('accepts a prevTx, index [and sequence number]', function () {
       var prevTx = new Transaction()
-      prevTx.addOutput(scripts[0], 0)
-      prevTx.addOutput(scripts[1], 1)
+      prevTx.addOutput(scripts[0], 0, 1)
+      prevTx.addOutput(scripts[1], 1, 1)
 
       var vin = txb.addInput(prevTx, 1, 54)
       assert.strictEqual(vin, 0)
@@ -178,7 +178,7 @@ describe('TransactionBuilder', function () {
     })
 
     it('accepts an address string and value', function () {
-      var vout = txb.addOutput(keyPair.getAddress(), 1000)
+      var vout = txb.addOutput(keyPair.getAddress(), 1000, 1)
       assert.strictEqual(vout, 0)
 
       var txout = txb.tx.outs[0]
@@ -187,7 +187,7 @@ describe('TransactionBuilder', function () {
     })
 
     it('accepts a ScriptPubKey and value', function () {
-      var vout = txb.addOutput(scripts[0], 1000)
+      var vout = txb.addOutput(scripts[0], 1000, 1)
       assert.strictEqual(vout, 0)
 
       var txout = txb.tx.outs[0]
@@ -197,45 +197,45 @@ describe('TransactionBuilder', function () {
 
     it('throws if address is of the wrong network', function () {
       assert.throws(function () {
-        txb.addOutput('2NGHjvjw83pcVFgMcA7QvSMh2c246rxLVz9', 1000)
+        txb.addOutput('2NGHjvjw83pcVFgMcA7QvSMh2c246rxLVz9', 1000, 1)
       }, /2NGHjvjw83pcVFgMcA7QvSMh2c246rxLVz9 has no matching Script/)
     })
 
     it('add second output after signed first input with SIGHASH_NONE', function () {
       txb.addInput(txHash, 0)
-      txb.addOutput(scripts[0], 2000)
+      txb.addOutput(scripts[0], 2000, 1)
       txb.sign(0, keyPair, undefined, Transaction.SIGHASH_NONE)
-      assert.equal(txb.addOutput(scripts[1], 9000), 1)
+      assert.equal(txb.addOutput(scripts[1], 9000, 1), 1, 1)
     })
 
     it('add first output after signed first input with SIGHASH_NONE', function () {
       txb.addInput(txHash, 0)
       txb.sign(0, keyPair, undefined, Transaction.SIGHASH_NONE)
-      assert.equal(txb.addOutput(scripts[0], 2000), 0)
+      assert.equal(txb.addOutput(scripts[0], 2000, 1), 0, 1)
     })
 
     it('add second output after signed first input with SIGHASH_SINGLE', function () {
       txb.addInput(txHash, 0)
-      txb.addOutput(scripts[0], 2000)
+      txb.addOutput(scripts[0], 2000, 1)
       txb.sign(0, keyPair, undefined, Transaction.SIGHASH_SINGLE)
-      assert.equal(txb.addOutput(scripts[1], 9000), 1)
+      assert.equal(txb.addOutput(scripts[1], 9000, 1), 1)
     })
 
     it('add first output after signed first input with SIGHASH_SINGLE', function () {
       txb.addInput(txHash, 0)
       txb.sign(0, keyPair, undefined, Transaction.SIGHASH_SINGLE)
       assert.throws(function () {
-        txb.addOutput(scripts[0], 2000)
+        txb.addOutput(scripts[0], 2000, 1)
       }, /No, this would invalidate signatures/)
     })
 
     it('throws if SIGHASH_ALL has been used to sign any existing scriptSigs', function () {
       txb.addInput(txHash, 0)
-      txb.addOutput(scripts[0], 2000)
+      txb.addOutput(scripts[0], 2000, 1)
       txb.sign(0, keyPair)
 
       assert.throws(function () {
-        txb.addOutput(scripts[1], 9000)
+        txb.addOutput(scripts[1], 9000, 1)
       }, /No, this would invalidate signatures/)
     })
   })
@@ -381,30 +381,6 @@ describe('TransactionBuilder', function () {
         tx = txb.build()
         assert.strictEqual(tx.toHex(), f.txHex)
       })
-    })
-  })
-
-  describe('multisig edge case', function () {
-    var network = NETWORKS.testnet
-
-    it('should handle badly pre-filled OP_0s', function () {
-      // OP_0 is used where a signature is missing
-      var redeemScripSig = bscript.fromASM('OP_0 OP_0 3045022100daf0f4f3339d9fbab42b098045c1e4958ee3b308f4ae17be80b63808558d0adb02202f07e3d1f79dc8da285ae0d7f68083d769c11f5621ebd9691d6b48c0d4283d7d01 52410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b84104c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee51ae168fea63dc339a3c58419466ceaeef7f632653266d0e1236431a950cfe52a4104f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9388f7b0f632de8140fe337e62a37f3566500a99934c2231b6cb9fd7584b8e67253ae')
-      var redeemScript = bscript.fromASM('OP_2 0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8 04c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee51ae168fea63dc339a3c58419466ceaeef7f632653266d0e1236431a950cfe52a 04f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9388f7b0f632de8140fe337e62a37f3566500a99934c2231b6cb9fd7584b8e672 OP_3 OP_CHECKMULTISIG')
-
-      var tx = new Transaction()
-      tx.addInput(new Buffer('cff58855426469d0ef16442ee9c644c4fb13832467bcbc3173168a7916f07149', 'hex'), 0, undefined, redeemScripSig)
-      tx.addOutput(new Buffer('76a914aa4d7985c57e011a8b3dd8e0e5a73aaef41629c588ac', 'hex'), 1000)
-
-      // now import the Transaction
-      var txb = TransactionBuilder.fromTransaction(tx, NETWORKS.testnet)
-
-      var keyPair = ECPair.fromWIF('91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgx3cTMqe', network)
-      txb.sign(0, keyPair, redeemScript)
-
-      var tx2 = txb.build()
-      assert.equal(tx2.getId(), 'eab59618a564e361adef6d918bd792903c3d41bcf1220137364fb847880467f9')
-      assert.equal(bscript.toASM(tx2.ins[0].script), 'OP_0 3045022100daf0f4f3339d9fbab42b098045c1e4958ee3b308f4ae17be80b63808558d0adb02202f07e3d1f79dc8da285ae0d7f68083d769c11f5621ebd9691d6b48c0d4283d7d01 3045022100a346c61738304eac5e7702188764d19cdf68f4466196729db096d6c87ce18cdd022018c0e8ad03054b0e7e235cda6bedecf35881d7aa7d94ff425a8ace7220f38af001 52410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b84104c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee51ae168fea63dc339a3c58419466ceaeef7f632653266d0e1236431a950cfe52a4104f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9388f7b0f632de8140fe337e62a37f3566500a99934c2231b6cb9fd7584b8e67253ae')
     })
   })
 })
