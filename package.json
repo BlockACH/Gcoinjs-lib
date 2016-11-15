@@ -1,38 +1,23 @@
 {
   "name": "gcoinjs-lib",
-  "version": "2.3.0",
+  "version": "0.0.2",
   "description": "Client-side Gcoin JavaScript library",
   "main": "./src/index.js",
   "engines": {
     "node": ">=0.12"
   },
   "keywords": [
+    "gcoin",
     "bitcoin",
     "browser",
     "client",
     "library"
   ],
   "contributors": [
-    {
-      "name": "Daniel Cousens",
-      "email": "bitcoin@dcousens.com",
-      "url": "http://dcousens.com"
-    },
-    {
-      "name": "Kyle Drake",
-      "email": "kyle@kyledrake.net",
-      "url": "http://kyledrake.net/"
-    },
-    {
-      "name": "Wei Lu",
-      "email": "luwei.here@gmail.com",
-      "url": "http://weilu.github.io/"
-    },
-    {
-      "name": "Stefan Thomas",
-      "email": "justmoon@members.fsf.org",
-      "url": "http://www.justmoon.net"
-    }
+    "Daniel Cousens <bitcoin@dcousens.com> (http://dcousens.com)",
+    "Kyle Drake <kyle@kyledrake.net> (http://kyledrake.net/)",
+    "Wei Lu <luwei.here@gmail.com> (http://weilu.github.io/)",
+    "Stefan Thomas <justmoon@members.fsf.org> (http://www.justmoon.net)"
   ],
   "scripts": {
     "coverage-report": "nyc report --reporter=lcov",
@@ -44,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bitcoinjs/bitcoinjs-lib.git"
+    "url": "git+https://github.com/BlockACH/Gcoind-rpc.git"
   },
   "files": [
     "src"
@@ -75,5 +60,13 @@
     "sinon": "^1.12.2",
     "standard": "^8.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BlockACH/Gcoind-rpc/issues"
+  },
+  "homepage": "https://github.com/BlockACH/Gcoind-rpc#readme",
+  "directories": {
+    "test": "test"
+  },
+  "author": "boolafish <boolafish945@gmail.com> (https://github.com/boolafish)"
 }

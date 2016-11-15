@@ -1,109 +1,37 @@
-# BitcoinJS (bitcoinjs-lib)
+# GcoinJS (gcoinjs-lib)
 
-[![Build Status](https://travis-ci.org/bitcoinjs/bitcoinjs-lib.png?branch=master)](https://travis-ci.org/bitcoinjs/bitcoinjs-lib)
+<!--[![Build Status](https://travis-ci.org/bitcoinjs/bitcoinjs-lib.png?branch=master)](https://travis-ci.org/bitcoinjs/bitcoinjs-lib)
 [![NPM](https://img.shields.io/npm/v/bitcoinjs-lib.svg)](https://www.npmjs.org/package/bitcoinjs-lib)
 [![tip for next commit](https://tip4commit.com/projects/735.svg)](http://tip4commit.com/projects/735)
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
+-->
 
-
-The pure JavaScript Bitcoin library for node.js and browsers.
-Used by over a million wallet users and the backbone for almost all Bitcoin web wallets in production today.
-
-
-## Features
-
-- Clean: Pure JavaScript, concise code, easy to read.
-- Tested: Coverage > 90%, third-party integration tests.
-- Careful: Two person approval process for small, focused pull requests.
-- Compatible: Works on Node.js and all modern browsers.
-- Powerful: Support for advanced features, such as multi-sig, HD Wallets.
-- Secure: Strong random number generation, PGP signed releases, trusted developers.
-- Principled: No support for browsers with crap RNG (IE < 11)
-- Standardized: Node community coding style, Browserify, Node's stdlib and Buffers.
-- Fast: Optimized code, uses typed arrays instead of byte arrays for performance.
-- Experiment-friendly: Bitcoin Mainnet and Testnet support.
-- Altcoin-ready: Capable of working with bitcoin-derived cryptocurrencies (such as Dogecoin).
-
-
-## Should I use this in production?
-
-If you are thinking of using the master branch of this library in production, **stop**.
-Master is not stable; it is our development branch, and [only tagged releases may be classified as stable](https://github.com/bitcoinjs/bitcoinjs-lib/tags).
+The pure JavaScript Gcoin library for node.js and browsers.
+Forked from [BitcoinJS](https://github.com/bitcoinjs/bitcoinjs-lib).
 
 
 ## Installation
 
-`npm install bitcoinjs-lib`
+`npm install gcoinjs-lib`
 
 
 ## Setup
 
 ### Node.js
 
-    var bitcoin = require('bitcoinjs-lib')
+    var gcoin = require('gcoinjs-lib')
 
-
-### Browser
-
-If you're familiar with how to use browserify, ignore this and proceed normally.
-These steps are advisory only,  and may not be necessary for your application.
-
-[Browserify](https://github.com/substack/node-browserify) is assumed to be installed for these steps.
-
-From your repository, create an `index.js` file
-``` javascript
-module.exports = {
-  base58: require('bs58'),
-  bitcoin: require('bitcoinjs-lib'),
-  ecurve: require('ecurve'),
-  BigInteger: require('bigi'),
-  Buffer: require('buffer')
-}
-```
-
-Install each of the above packages locally
-``` bash
-npm install bs58 bitcoinjs-lib ecurve bigi buffer
-```
-
-After installation, use browserify to compile `index.js` for use in the browser:
-``` bash
-    $ browserify index.js --standalone foo > app.js
-```
-
-You will now be able to use `<script src="app.js" />` in your browser, with each of the above exports accessible via the global `foo` object (or whatever you chose for the `--standalone` parameter above).
-
-**NOTE**: See our package.json for the currently supported version of browserify used by this repository.
-
-**NOTE**: When uglifying the javascript, you must exclude the following variable names from being mangled: `Array`, `BigInteger`, `Boolean`, `Buffer`, `ECPair`, `Function`, `Number`, `Point` and `Script`.
-This is because of the function-name-duck-typing used in [typeforce](https://github.com/dcousens/typeforce).
-Example:
-``` bash
-uglifyjs ... --mangle --reserved 'Array,BigInteger,Boolean,Buffer,ECPair,Function,Number,Point'
-```
-
-### Flow
-
-Definitions for [Flow typechecker](https://flowtype.org/) are available in flow-typed repository.
-
-[You can either download them directly](https://github.com/flowtype/flow-typed/blob/master/definitions/npm/bitcoinjs-lib_v2.x.x/flow_%3E%3Dv0.17.x/bitcoinjs-lib_v2.x.x.js) from the repo, or with the flow-typed CLI
-
-    # npm install -g flow-typed
-    $ flow-typed install -f 0.27 bitcoinjs-lib@2.2.0 # 0.27 for flow version, 2.2.0 for bitcoinjs-lib version
-
-The definitions are complete and up to date with version 2.2.0. The definitions are maintained by [@runn1ng](https://github.com/runn1ng).
 
 ## Examples
 
-The below examples are implemented as integration tests, they should be very easy to understand.  Otherwise, pull requests are appreciated.
+For most part of the library, it is the same as bitcoinjs-lib. The main different part from Gcoin to Bitcoin is that Gcoin support multi-color native currency. As a result, when creating new transaction, the `addOutput([:address], [:amount], [:color])` method of the `TransactionBuilder` is different. The `color` should be added into the last parameter.
 
-- [Generate a random address](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/basic.js#L9)
-- [Generate a address from a SHA256 hash](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/basic.js#L20)
-- [Generate a address and WIF for Litecoin](https://github.com/bitcoin/bitcoinjs-lib/blob/master/test/integration/basic.js#L29)
-- [Import an address via WIF](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/basic.js#L43)
-- [Create a Transaction](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/basic.js#L50)
-- [Create an OP RETURN transaction](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/advanced.js#L24)
+- [Generate a random address](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L9)
+- [Generate a address from a SHA256 hash](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L20)
+- [Import an address via WIF](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L43)
+- [Create a Transaction](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L37)
+- (Supporting Soon) [Create an OP RETURN transaction](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/advanced.js#L24)
 - [Create a 2-of-3 multisig P2SH address](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/multisig.js#L9)
 - [Spend from a 2-of-4 multisig P2SH address](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/multisig.js#L25)
 - [Generate a single-key stealth address](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/stealth.js#L11)
@@ -116,34 +44,6 @@ The below examples are implemented as integration tests, they should be very eas
 
 If you have a use case that you feel could be listed here, please [ask for it](https://github.com/bitcoinjs/bitcoinjs-lib/issues/new)!
 
-
-## Projects utilizing BitcoinJS
-
-- [BitAddress](https://www.bitaddress.org)
-- [Blockchain.info](https://blockchain.info/wallet)
-- [Blocktrail](https://www.blocktrail.com/)
-- [Dark Wallet](https://www.darkwallet.is/)
-- [DecentralBank](http://decentralbank.com/)
-- [Dogechain Wallet](https://dogechain.info)
-- [EI8HT Wallet](http://ei8.ht/)
-- [GreenAddress](https://greenaddress.it)
-- [Robocoin](https://wallet.robocoin.com)
-- [Skyhook ATM](http://projectskyhook.com)
-
-
-## Contributors
-
-Stefan Thomas is the inventor and creator of this project. His pioneering work made Bitcoin web wallets possible.
-Daniel Cousens, Wei Lu, JP Richardson and Kyle Drake lead the major refactor of the library from 0.1.3 to 1.0.0.
-
-Since then, many people have contributed. [Click here](https://github.com/bitcoinjs/bitcoinjs-lib/graphs/contributors) to see the comprehensive list.
-
-
-## Contributing
-
-We are always accepting of pull requests, but we do adhere to specific standards in regards to coding style, test driven development and commit messages.
-
-Please make your best effort to adhere to these when contributing to save on trivial corrections.
 
 
 ### Running the test suite

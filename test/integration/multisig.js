@@ -51,7 +51,7 @@ describe('bitcoinjs-lib (multisig)', function () {
 
       var txb = new bitcoin.TransactionBuilder(bitcoin.networks.testnet)
       txb.addInput(unspent.txId, unspent.vout)
-      txb.addOutput(targetAddress, targetValue)
+      txb.addOutput(targetAddress, targetValue, 1)
 
       // sign with 1st and 3rd key
       txb.sign(0, keyPairs[0], redeemScript)
