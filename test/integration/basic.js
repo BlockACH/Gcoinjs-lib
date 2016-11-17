@@ -3,7 +3,6 @@
 var assert = require('assert')
 var bigi = require('bigi')
 var gcoin = require('../../')
-var blockchain = require('./_blockchain')
 
 describe('gcoinjs-lib (basic)', function () {
   it('can generate a random gcoin address', function () {

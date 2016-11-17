@@ -6,10 +6,10 @@ var opcodes = require('./opcodes.json')
 var typeforce = require('typeforce')
 var types = require('./types')
 
-function Transaction (type = Transaction.TX_TYPE_NORMAL) {
+function Transaction (type) {
   this.version = 1
   this.locktime = 0
-  this.type = type
+  this.type = type || Transaction.TX_TYPE_NORMAL
   this.ins = []
   this.outs = []
 }

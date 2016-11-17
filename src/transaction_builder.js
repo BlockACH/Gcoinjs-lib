@@ -266,12 +266,13 @@ function fixMultisigOrder (input, transaction, vin) {
   })
 }
 
-function TransactionBuilder (network) {
+function TransactionBuilder (network, type) {
   this.prevTxMap = {}
   this.network = network || networks.bitcoin
+  this.type = type || Transaction.TX_TYPE_NORMAL
 
   this.inputs = []
-  this.tx = new Transaction()
+  this.tx = new Transaction(this.type)
 }
 
 TransactionBuilder.prototype.setLockTime = function (locktime) {

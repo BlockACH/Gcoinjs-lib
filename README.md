@@ -27,10 +27,10 @@ Forked from [BitcoinJS](https://github.com/bitcoinjs/bitcoinjs-lib).
 
 For most part of the library, it is the same as bitcoinjs-lib. The main different part from Gcoin to Bitcoin is that Gcoin support multi-color native currency. As a result, when creating new transaction, the `addOutput([:address], [:amount], [:color])` method of the `TransactionBuilder` is different. The `color` should be added into the last parameter.
 
-- [Generate a random address](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L9)
-- [Generate a address from a SHA256 hash](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L20)
-- [Import an address via WIF](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L43)
-- [Create a Transaction](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L37)
+- [Generate a random address](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L8)
+- [Generate a address from a SHA256 hash](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L19)
+- [Import an address via WIF](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L29)
+- [Create a Transaction](https://github.com/BlockACH/Gcoinjs-lib/blob/master/test/integration/basic.js#L36)
 - (Supporting Soon) [Create an OP RETURN transaction](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/advanced.js#L24)
 - [Create a 2-of-3 multisig P2SH address](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/multisig.js#L9)
 - [Spend from a 2-of-4 multisig P2SH address](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/multisig.js#L25)
